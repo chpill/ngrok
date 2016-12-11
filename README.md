@@ -2,6 +2,12 @@
 
 This is a small clojure library and its accompanying boot task to use [ngrok](ngrok.io).
 
+It can open a ngrok tunnel, and it will expose the public url of this tunnel as
+a JVM property. You can access it like this `(System/getProperty
+"ngrok-tunnel-url")`, or even better, if you use the [aero (FIXME find url)]()
+you can read it from your configuration file using the reader `#prop
+ngrok-tunnel-url`.
+
 You must provide a `ngrok` binary available on your `PATH`, or otherwise
 available on you filesystem (see the `:bin-path` option for more informations).
 
@@ -41,6 +47,29 @@ A boot task is provided if you want to use `start-long-running` along with your 
         ...))
 
 ```
+
+## Why?
+
+Ngrok is a wonderful utility to test integration with external services locally
+on your development environment. In particular, This wrapper was conceived while
+integrating trello webhooks with a clojure app, and greatly simplified the
+development workflow.
+
+## How?
+
+This wrapper starts a ngrok process outside of the JVM, then communicate with
+its HTTP API to open the requested tunnel.
+
+## Skeletons
+
+There are various points that needs to be adressed to get this software out of
+alpha state:
+
+* Get the concurrency right: For now, calling `start` will block the user
+  thread, but it would be better provide more options to the user (like the
+  http-kit client does maybe). Furthermore, There is a dependency on
+  `core.async` we should get rid of for a wrapper this thin.
+* 
 
 ## License
 
