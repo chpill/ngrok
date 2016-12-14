@@ -31,15 +31,13 @@
   []
   (fn [next-handler]
     (fn [fileset]
-      (let [[user pass] (get-creds), clojars-creds (atom {})]
-        (if (and user pass)
-          (swap! clojars-creds assoc :username user :password pass)
-          (do (println "CLOJARS_USER and CLOJARS_PASS were not set; please enter your Clojars credentials.")
-              (print "Username: ")
-              (#(swap! clojars-creds assoc :username %) (read-line))
-              (print "Password: ")
-              (#(swap! clojars-creds assoc :password %)
-               (apply str (.readPassword (System/console))))))
+      (let [clojars-creds (atom {})]
+        (do (println "CLOJARS_USER and CLOJARS_PASS were not set; please enter your Clojars credentials.")
+            (print "Username: ")
+            (#(swap! clojars-creds assoc :username %) (read-line))
+            (print "Password: ")
+            (#(swap! clojars-creds assoc :password %)
+             (apply str (.readPassword (System/console)))))
         (merge-env! :repositories [["deploy-clojars" (merge @clojars-creds {:url "https://clojars.org/repo"})]])
         (next-handler fileset)))))
 
@@ -49,4 +47,4 @@
   (comp (pom)
         (jar)
         (authorize)
-        (push)))
+        (push :repo "deploy-clojars")))
